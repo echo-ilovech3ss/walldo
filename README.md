@@ -1,53 +1,66 @@
 # 🖼️ WallDo
 
-**WallDo** is a minimal, elegant desktop to-do list that lives on your wallpaper. Manage your tasks in a beautiful OLED-dark interface and have them automatically rendered onto your desktop background in real-time.
-
-![WallDo UI Mockup](https://raw.githubusercontent.com/echo-ilovech3ss/walldo/main/src/renderer/src/assets/preview.png) *(Add a screenshot here later!)*
+**WallDo** is a minimal, elegant desktop wallpaper app that displays your to-do list directly on your desktop background.
 
 ## ✨ Features
 
-- **Wallpaper Rendering**: Your to-do list is baked into your wallpaper using high-quality rendering.
-- **⚡ Live Sync**: Once enabled, every change you make in the app (adding, completing, or deleting tasks) updates your wallpaper automatically within seconds.
-- **🎨 Premium Themes**: 6 curated, deep-gradient themes designed for perfect desktop contrast and OLED displays.
-- **🖥️ Cross-Platform**: Native support for **macOS** and **Windows** with platform-specific window controls and layouts.
-- **🌑 OLED-Dark Design**: A glassmorphic, focused interface that stays out of your way.
+- **Wallpaper Rendering**: Your to-do list is rendered onto your desktop wallpaper
+- **⚡ Live Sync**: Changes update your wallpaper automatically
+- **🎨 Themes**: Multiple dark themes designed for perfect desktop contrast
+- **🖥️ Cross-Platform**: Support for **Windows**, **macOS**, and **Linux**
+- **🌑 OLED-Dark Design**: Clean, glassmorphic interface
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (Version 18 or higher recommended)
+
+- [Node.js](https://nodejs.org/) (Version 18 or higher)
 - npm (comes with Node.js)
 
 ### Installation
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/echo-ilovech3ss/walldo.git
    cd walldo
    ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
 
-### Development
-To start the app in development mode with Hot Module Replacement (HMR):
+## 💻 Development
+
+Start the app in development mode:
+
 ```bash
 npm run dev
 ```
 
 ## 📦 Building for Production
 
-### macOS
-To create a packaged `.app` or `.dmg`:
+### Windows
+
 ```bash
-npm run build:mac
+npm run package:win
 ```
 
-### Windows
-To create a packaged `.exe` or installer:
+### macOS
+
 ```bash
-npm run build:win
+npm run package:mac
 ```
+
+### Linux
+
+```bash
+npm run package:linux
+```
+
+The built files will be in the `dist/` folder.
+
+The built files will be in the `dist/` folder.
 
 ## 🛠️ Tech Stack
 
@@ -56,11 +69,13 @@ npm run build:win
 - **Build Tool**: [electron-vite](https://electron-vite.org/)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Image Processing**: `html-to-image` for canvas capture.
-- **OS Integration**: `wallpaper` for system-level background setting.
+- **Image Processing**: `html-to-image`
+- **OS Integration**: `wallpaper` package
 
 ## 📄 License
+
 MIT
 
 ---
+
 Crafted with ❤️ for a focused desktop experience.
