@@ -1,0 +1,31 @@
+{
+  "name": "walldo",
+  "version": "1.0.0",
+  "description": "Turn your to-do list into a beautiful desktop wallpaper",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package:mac": "electron-vite build && electron-builder --mac",
+    "package:win": "electron-vite build && electron-builder --win"
+  },
+  "dependencies": {
+    "electron-store": "^10.0.1",
+    "html-to-image": "^1.11.11",
+    "lucide-react": "^0.475.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "wallpaper": "^7.2.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^5.0.0",
+    "electron": "^35.1.5",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.8.2",
+    "vite": "^7.3.1"
+  }
+}

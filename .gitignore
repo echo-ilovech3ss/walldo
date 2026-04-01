@@ -1,0 +1,22 @@
+# Node.js
+node_modules
+dist
+out
+*.log
+.DS_Store
+
+# Electron-Vite
+.electron-vite
+
+# Generated Wallpaper Icons & Assets
+src/main/resources/icons
+wallpaper.png
+src/renderer/public/wallpapers
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode
+.idea
