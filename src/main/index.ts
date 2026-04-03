@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen, net } from 'electron'
 import { join } from 'path'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
@@ -74,6 +74,90 @@ ipcMain.handle('set-wallpaper', async (_event, dataUrl: string) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('Failed to set wallpaper:', message)
+    return { success: false, error: message }
+  }
+})
+
+// IPC: AI Chat via OpenRouter
+ipcMain.handle('ai-chat', async (_event, userMessage: string, apiKey: string) => {
+  try {
+    const body = JSON.stringify({
+      model: 'openrouter/free',
+      messages: [
+        {
+          role: 'system',
+          content: `You are WallDo's friendly AI assistant. Your job is to help users plan their day and suggest productive tasks. You're warm, casual, and never overwhelming.
+
+IMPORTANT RULES:
+- Keep responses short (2-4 sentences max).
+- At the end of your response, if you're suggesting specific tasks, include them as a JSON array using the format: SUGGESTIONS: ["task 1", "task 2", "task 3"]
+- Each suggestion should be a short, actionable task description.
+- Suggest 2-4 tasks at most.
+- Be encouraging but not cheesy.
+- If the user has no tasks yet, suggest general good habits or planning tasks.`
+        },
+        {
+          role: 'user',
+          content: userMessage
+        }
+      ],
+      max_tokens: 300
+    })
+
+    const request = net.request({
+      method: 'POST',
+      url: 'https://openrouter.ai/api/v1/chat/completions',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`
+      }
+    })
+
+    return new Promise((resolve) => {
+      let responseData = ''
+
+      request.on('response', (response) => {
+        response.on('data', (chunk: string | Buffer) => {
+          responseData += chunk
+        })
+
+        response.on('end', () => {
+          try {
+            const parsed = JSON.parse(responseData)
+            const content = parsed.choices?.[0]?.message?.content ?? 'No response received.'
+
+            // Extract suggestions from SUGGESTIONS: [...] pattern
+            let suggestions: string[] | undefined
+            const match = content.match(/SUGGESTIONS:\s*\[([^\]]+)\]/)
+            if (match) {
+              suggestions = match[1]
+                .split(',')
+                .map((s: string) => s.trim().replace(/^["']|["']$/g, ''))
+                .filter((s: string) => s.length > 0)
+            }
+
+            const cleanContent = content.replace(/SUGGESTIONS:\s*\[[^\]]+\]/, '').trim()
+
+            resolve({ success: true, content: cleanContent, suggestions })
+          } catch {
+            resolve({ success: false, error: 'Failed to parse response from AI service.' })
+          }
+        })
+
+        response.on('error', () => {
+          resolve({ success: false, error: 'Error reading response.' })
+        })
+      })
+
+      request.on('error', () => {
+        resolve({ success: false, error: 'Network error connecting to OpenRouter.' })
+      })
+
+      request.write(body)
+      request.end()
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     return { success: false, error: message }
   }
 })

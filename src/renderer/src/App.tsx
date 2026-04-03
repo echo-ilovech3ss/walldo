@@ -1,12 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Image, Zap, ZapOff } from 'lucide-react'
+import { Image, Zap, ZapOff, BookOpen } from 'lucide-react'
 import { toPng } from 'html-to-image'
 import { Titlebar } from './components/Titlebar'
 import { AddTodo } from './components/AddTodo'
 import { TodoList } from './components/TodoList'
 import { ThemeSwatches } from './components/ThemeSwatches'
+import { NeedIdeas } from './components/NeedIdeas'
+import { TutorialOverlay } from './components/TutorialOverlay'
 import { WallpaperCanvas } from './components/WallpaperCanvas'
 import { useTodoStore } from './hooks/useTodoStore'
+import { useTutorialStore } from './hooks/useTutorial'
+import { useAiChatStore } from './hooks/useAiChat'
 
 type ToastType = 'success' | 'error'
 
@@ -26,6 +30,16 @@ export default function App() {
 
   const todos = useTodoStore((s) => s.todos)
   const theme = useTodoStore((s) => s.theme)
+  const hasSeenTutorial = useTutorialStore((s) => s.hasSeenTutorial)
+  const startTutorial = useTutorialStore((s) => s.startTutorial)
+  const resetTutorial = useTutorialStore((s) => s.resetTutorial)
+
+  // Auto-start tutorial on first launch
+  useEffect(() => {
+    if (!hasSeenTutorial) {
+      startTutorial()
+    }
+  }, [hasSeenTutorial, startTutorial])
 
   const showToast = useCallback((message: string, type: ToastType) => {
     setToast({ message, type })
@@ -104,6 +118,14 @@ export default function App() {
     <div className={`app ${isWindows ? 'app--windows' : ''}`}>
       <Titlebar />
 
+      {/* Tutorial start button for returning users - positioned at app level */}
+      {hasSeenTutorial && (
+        <button className="tutorial-restart-btn" onClick={resetTutorial}>
+          <BookOpen size={14} />
+          Revisit guide
+        </button>
+      )}
+
       <div className="main-content">
         <div className="header">
           <h1 className="header__title">Tasks</h1>
@@ -125,6 +147,7 @@ export default function App() {
         <AddTodo />
         <TodoList />
 
+        <NeedIdeas />
         <ThemeSwatches />
 
         <div className="action-bar">
@@ -170,6 +193,9 @@ export default function App() {
           {toast.message}
         </div>
       )}
+
+      {/* Tutorial overlay */}
+      <TutorialOverlay />
     </div>
   )
 }

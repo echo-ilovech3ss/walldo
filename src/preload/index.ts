@@ -7,6 +7,13 @@ const api = {
   setWallpaper: (dataUrl: string): Promise<{ success: boolean; path?: string; error?: string }> =>
     ipcRenderer.invoke('set-wallpaper', dataUrl),
 
+  aiChat: (message: string, apiKey: string): Promise<{
+    success: boolean;
+    content?: string;
+    suggestions?: string[];
+    error?: string;
+  }> => ipcRenderer.invoke('ai-chat', message, apiKey),
+
   windowMinimize: (): void => ipcRenderer.send('window-minimize'),
   windowMaximize: (): void => ipcRenderer.send('window-maximize'),
   windowClose: (): void => ipcRenderer.send('window-close'),
