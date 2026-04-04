@@ -37,7 +37,10 @@
     "directories": {
       "output": "dist"
     },
-    "asar": true,
+    "asar": {
+      "smartUnpack": true
+    },
+    "asarUnpack": ["node_modules/wallpaper/**/*"],
     "compression": "normal",
     "mac": {
       "target": ["dmg", "zip"],

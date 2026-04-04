@@ -1,8 +1,11 @@
 import { app, shell, BrowserWindow, ipcMain, screen, net } from 'electron'
 import { join } from 'path'
+import { execFile } from 'child_process'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
+import { promisify } from 'util'
 const isDev = !app.isPackaged
+const execFileAsync = promisify(execFile)
 
 let mainWindow: BrowserWindow | null = null
 
@@ -66,9 +69,16 @@ ipcMain.handle('set-wallpaper', async (_event, dataUrl: string) => {
     const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '')
     await writeFile(filePath, Buffer.from(base64Data, 'base64'))
 
-    // Dynamic import because wallpaper is ESM-only
-    const { setWallpaper } = await import('wallpaper')
-    await setWallpaper(filePath)
+    // Call the macos-wallpaper binary directly.
+    // In dev: resolve from the cwd; in prod: use process.resourcesPath.
+    let binaryPath: string
+    if (!app.isPackaged) {
+      binaryPath = join(process.cwd(), 'node_modules', 'wallpaper', 'source', 'macos-wallpaper')
+    } else {
+      binaryPath = join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'wallpaper', 'source', 'macos-wallpaper')
+    }
+
+    await execFileAsync(binaryPath, ['set', filePath])
 
     return { success: true, path: filePath }
   } catch (error) {
